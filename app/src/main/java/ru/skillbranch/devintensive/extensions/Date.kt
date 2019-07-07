@@ -19,21 +19,21 @@ fun Date.humanizeDiff(date: Date = Date()): String {
         diffDays > 360 -> "более года назад"
         diffHours > 26 -> {
             when {
-                diffDays.toString().last().toInt() in 2..4 && diffDays !in 12..14 -> "$diffDays дня назад"
+                diffDays.toString().last().toString().toInt() in 2..4 && diffDays !in 12..14 -> "$diffDays дня назад"
                 else -> "$diffDays дней назад"
             }
         }
         diffHours in 23..26 -> "день назад"
         diffHours <= 22 && diffMinutes > 75 -> {
             when {
-                diffHours.toString().last().toInt() in 2..4 && diffHours !in 12..14  -> "$diffHours часа назад"
+                diffHours.toString().last().toString().toInt() in 2..4 && diffHours !in 12..14  -> "$diffHours часа назад"
                 else -> "$diffHours часов назад"
             }
         }
         diffMinutes in 46..75 -> "час назад"
         diffMinutes <= 45 && diffSeconds > 75 -> {
             when {
-                diffMinutes.toString().last().toInt() in 2..4 && diffMinutes !in 12..14 -> "$diffMinutes минуты назад"
+                diffMinutes.toString().last().toString().toInt() in 2..4 && diffMinutes !in 12..14 -> "$diffMinutes минуты назад"
                 else -> "$diffMinutes минут назад"
             }
         }
@@ -44,21 +44,21 @@ fun Date.humanizeDiff(date: Date = Date()): String {
         diffDays > 360 -> "более чем через год"
         diffHours > 26 -> {
             when {
-                diffDays.toString().last().toInt() in 2..4 && diffDays !in 12..14 -> "через $diffDays дня"
+                diffDays.toString().last().toString().toInt() in 2..4 && diffDays !in 12..14 -> "через $diffDays дня"
                 else -> "через $diffDays дней"
             }
         }
         diffHours in 23..26 -> "через день"
         diffHours <= 22 && diffMinutes > 75 -> {
             when {
-                diffHours.toString().last().toInt() in 2..4 && diffHours !in 12..14  -> "через $diffHours часа"
+                diffHours.toString().last().toString().toInt() in 2..4 && diffHours !in 12..14  -> "через $diffHours часа"
                 else -> "через $diffHours часов"
             }
         }
         diffMinutes in 46..75 -> "через час"
         diffMinutes <= 45 && diffSeconds > 75 -> {
             when {
-                diffMinutes.toString().last().toInt() in 2..4 && diffMinutes !in 12..14 -> "через $diffMinutes минуты"
+                diffMinutes.toString().last().toString().toInt() in 2..4 && diffMinutes !in 12..14 -> "через $diffMinutes минуты"
                 else -> "через $diffMinutes минут"
             }
         }
