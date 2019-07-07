@@ -96,9 +96,9 @@ enum class TimeUnits(val u: String, val y: String, val m: String) {
 
     fun plural(value: Int): String {
         return when {
-            value.toString().last().toString().toInt() == 1 && value.toString().last().toString().toInt()!in 12..14 -> u
-            value.toString().last().toString().toInt() in 2..4 && value.toString().last().toString().toInt()!in 12..14 -> y
-            else -> m
+            value.toString().last().toString().toInt() == 1 && value.toString().last().toString().toInt()!in 12..14 -> "$value $u"
+            value.toString().last().toString().toInt() in 2..4 && value.toString().last().toString().toInt()!in 12..14 -> "$value $y"
+            else -> "$value $m"
         }
     }
 }
