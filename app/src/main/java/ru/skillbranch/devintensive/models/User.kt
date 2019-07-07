@@ -22,7 +22,7 @@ data class User(val id : String,
     }
 
     data class Builder(
-        var id : String,
+        var id : String = "",
         var firstName : String? = null,
         var lastName : String? = null,
         var avatar : String? = null,
@@ -39,6 +39,6 @@ data class User(val id : String,
         fun respect(respect: Int) = apply { this.respect = respect}
         fun lastVisit(lastVisit: Date?) = apply { this.lastVisit = lastVisit }
         fun isOnline(isOnline: Boolean) = apply { this.isOnline = isOnline }
-        fun build() = User(id ,firstName , lastName, avatar, rating, respect, lastVisit, isOnline)
+        fun build() = User(if (id.isBlank()) "${++lastId}" else id ,firstName , lastName, avatar, rating, respect, lastVisit, isOnline)
     }
 }
