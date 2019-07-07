@@ -2,6 +2,7 @@ package ru.skillbranch.devintensive.extensions
 
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.math.absoluteValue
 
 const val SECONDS = 1000L
 const val MINUTES = SECONDS * 60
@@ -11,10 +12,10 @@ const val DAY = HOUR * 24
 fun Date.humanizeDiff(date: Date = Date()): String {
     val isPast = time < date.time
     val diff = Math.abs(time - date.time)
-    val diffDays = (diff / DAY).toInt()
-    val diffHours = (diff / HOUR).toInt()
-    val diffMinutes = (diff / MINUTES).toInt()
-    val diffSeconds = (diff / SECONDS).toInt()
+    val diffDays = (diff / DAY.absoluteValue).toInt()
+    val diffHours = (diff / HOUR.absoluteValue).toInt()
+    val diffMinutes = (diff / MINUTES.absoluteValue).toInt()
+    val diffSeconds = (diff / SECONDS.absoluteValue).toInt()
     return if (isPast) when {
         diffDays > 360 -> "более года назад"
         diffHours > 26 -> {
