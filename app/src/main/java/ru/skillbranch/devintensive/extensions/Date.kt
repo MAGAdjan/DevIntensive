@@ -88,9 +88,17 @@ fun Date.add(value: Int, units: TimeUnits = TimeUnits.SECOND): Date {
     return this
 }
 
-enum class TimeUnits {
-    SECOND,
-    MINUTE,
-    HOUR,
-    DAY
+enum class TimeUnits(val u: String, val y: String, val m: String) {
+    SECOND("секунду", "секунды", "секунд"),
+    MINUTE("минуту", "минуты", "минут"),
+    HOUR("час", "часа", "часов"),
+    DAY("день", "дня", "дней");
+
+    fun plural(value: Int): String {
+        return when {
+            value.toString().last().toString().toInt() == 1 && value.toString().last().toString().toInt()!in 12..14 -> u
+            value.toString().last().toString().toInt() in 2..4 && value.toString().last().toString().toInt()!in 12..14 -> y
+            else -> m
+        }
+    }
 }
