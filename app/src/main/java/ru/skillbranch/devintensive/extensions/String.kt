@@ -7,3 +7,6 @@ fun String.truncate(i: Int = 16): String {
     return trim().substring(0 until i).trim() + "..."
 }
 
+fun String.stripHtml() = replace("&(?:[a-z\\d]+|#\\d+|#x[a-f\\d]+);".toRegex(), "")
+    .replace("<(.|\\n)*?>".toRegex(), "")
+    .replace("[ ]+".toRegex(), " ")
