@@ -34,3 +34,15 @@ fun Activity.isKeyboardOpen(): Boolean {
     }
     return keypadHeight > screenHeight * 0.15
 }
+
+fun Activity.isKeyboardClosed(): Boolean {
+    var screenHeight = 0
+    var keypadHeight = 0
+    mainLay.viewTreeObserver.addOnGlobalLayoutListener {
+        val r = Rect()
+        mainLay.getWindowVisibleDisplayFrame(r)
+        screenHeight = mainLay.rootView.height
+        keypadHeight = screenHeight - r.bottom
+    }
+    return keypadHeight < screenHeight * 0.15
+}
