@@ -16,7 +16,7 @@ class Bender(var status: Status = Status.NORMAL, var question: Question = Questi
     fun listenAnswer(answer: String): Pair<String, Triple<Int, Int, Int>> {
         return if (question.answers.contains(answer)) {
             Log.d("log bleat", "$question")
-            if (question == Question.NAME && !answer.startsWith("[A-Z]")) {
+            if (question == Question.NAME && !Character.isUpperCase(answer[0])) {
                 Log.d("log bleat", "da zashli v etu xuinu")
                 Log.d("log bleat", answer)
                 Log.d("log bleat", "${question == Question.NAME}")
