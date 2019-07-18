@@ -14,7 +14,7 @@ class Bender(var status: Status = Status.NORMAL, var question: Question = Questi
     }
 
     fun listenAnswer(answer: String): Pair<String, Triple<Int, Int, Int>> {
-        return if (question.answers.contains(answer)) {
+        return if (question.answers.contains(answer.toLowerCase())) {
             Log.d("log bleat", "$question")
             if (question == Question.NAME && !Character.isUpperCase(answer[0])) {
                 Log.d("log bleat", "da zashli v etu xuinu")
@@ -61,7 +61,7 @@ class Bender(var status: Status = Status.NORMAL, var question: Question = Questi
         }
     }
     enum class Question(val question: String, val answers: List<String>) {
-        NAME("Как меня зовут?", listOf("Бендер", "bender")) {
+        NAME("Как меня зовут?", listOf("бендер", "bender")) {
             override fun nextQuestion(): Question = PROFESSION
         },
         PROFESSION("Назови мою профессию?", listOf("сгибальщик", "bender")) {
