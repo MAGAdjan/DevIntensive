@@ -1,5 +1,7 @@
 package ru.skillbranch.devintensive.models
 
+import android.util.Log
+
 class Bender(var status: Status = Status.NORMAL, var question: Question = Question.NAME) {
 
     fun askQuestion(): String = when(question) {
@@ -13,16 +15,21 @@ class Bender(var status: Status = Status.NORMAL, var question: Question = Questi
 
     fun listenAnswer(answer: String): Pair<String, Triple<Int, Int, Int>> {
         return if (question.answers.contains(answer)) {
+            Log.d("log bleat", "$question")
             if (question == Question.NAME && !answer.startsWith("[A-Z]")) {
-                "Имя должно начинаться с заглавной буквы\n${question.question}" to status.color
+                Log.d("log bleat", "da zashli v etu xuinu")
+                Log.d("log bleat", answer)
+                Log.d("log bleat", "${question == Question.NAME}")
+                Log.d("log bleat", "${answer.startsWith("[A-Z]")}")
+                return "Имя должно начинаться с заглавной буквы\n${question.question}" to status.color
             } else if (question == Question.PROFESSION && !answer.startsWith("[a-z]")) {
-                "Профессия должна начинаться со строчной буквы\n${question.question}" to status.color
+                return "Профессия должна начинаться со строчной буквы\n${question.question}" to status.color
             } else if (question == Question.MATERIAL && answer.contains("[0-9]")) {
-                "Материал не должен содержать цифр\n${question.question}" to status.color
+                return "Материал не должен содержать цифр\n${question.question}" to status.color
             } else if (question == Question.BDAY && !answer.contains("[A-Za-z]")) {
-                "Год моего рождения должен содержать только цифры\n${question.question}" to status.color
+               return "Год моего рождения должен содержать только цифры\n${question.question}" to status.color
             } else if (question == Question.SERIAL && !answer.contains("[A-Za-z") && answer.length != 7) {
-                "Серийный номер содержит только цифры, и их 7\n${question.question}" to status.color
+                return "Серийный номер содержит только цифры, и их 7\n${question.question}" to status.color
             }
             question = question.nextQuestion()
             "Отлично - ты справился\n${question.question}" to status.color
