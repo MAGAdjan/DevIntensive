@@ -13,6 +13,17 @@ class Bender(var status: Status = Status.NORMAL, var question: Question = Questi
 
     fun listenAnswer(answer: String): Pair<String, Triple<Int, Int, Int>> {
         return if (question.answers.contains(answer)) {
+            if (question == Question.NAME && !answer.startsWith("[A-Z]")) {
+                "Имя должно начинаться с заглавной буквы\n${question.question}" to status.color
+            } else if (question == Question.PROFESSION && !answer.startsWith("[a-z]")) {
+                "Профессия должна начинаться со строчной буквы\n${question.question}" to status.color
+            } else if (question == Question.MATERIAL && answer.contains("[0-9]")) {
+                "Материал не должен содержать цифр\n${question.question}" to status.color
+            } else if (question == Question.BDAY && !answer.contains("[A-Za-z]")) {
+                "Год моего рождения должен содержать только цифры\n${question.question}" to status.color
+            } else if (question == Question.SERIAL && !answer.contains("[A-Za-z") && answer.length != 7) {
+                "Серийный номер содержит только цифры, и их 7\n${question.question}" to status.color
+            }
             question = question.nextQuestion()
             "Отлично - ты справился\n${question.question}" to status.color
         } else {
