@@ -20,7 +20,7 @@ class Bender(var status: Status = Status.NORMAL, var question: Question = Questi
                 Log.d("log bleat", "da zashli v etu xuinu")
                 Log.d("log bleat", answer)
                 Log.d("log bleat", "${question == Question.NAME}")
-                Log.d("log bleat", "${answer.startsWith("[A-Z]")}")
+                Log.d("log bleat", "${Character.isUpperCase(answer[0])}")
                 return "Имя должно начинаться с заглавной буквы\n${question.question}" to status.color
             } else if (question == Question.PROFESSION && !answer.startsWith("[a-z]")) {
                 return "Профессия должна начинаться со строчной буквы\n${question.question}" to status.color
