@@ -22,7 +22,7 @@ class Bender(var status: Status = Status.NORMAL, var question: Question = Questi
                 Log.d("log bleat", "${question == Question.NAME}")
                 Log.d("log bleat", "${Character.isUpperCase(answer[0])}")
                 return "Имя должно начинаться с заглавной буквы\n${question.question}" to status.color
-            } else if (question == Question.PROFESSION && !Character.isUpperCase(answer[0])) {
+            } else if (question == Question.PROFESSION && Character.isUpperCase(answer[0])) {
                 return "Профессия должна начинаться со строчной буквы\n${question.question}" to status.color
             } else if (question == Question.MATERIAL && answer.contains("[0-9]")) {
                 return "Материал не должен содержать цифр\n${question.question}" to status.color
