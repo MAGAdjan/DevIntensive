@@ -14,7 +14,6 @@ class Bender(var status: Status = Status.NORMAL, var question: Question = Questi
     }
 
     fun listenAnswer(answer: String): Pair<String, Triple<Int, Int, Int>> {
-
         Log.d("log bleat", "$question")
         if (question == Question.NAME && !Character.isUpperCase(answer[0])) {
             Log.d("log bleat", "da zashli v etu xuinu")
@@ -24,7 +23,7 @@ class Bender(var status: Status = Status.NORMAL, var question: Question = Questi
             return "Имя должно начинаться с заглавной буквы\n${question.question}" to status.color
         } else if (question == Question.PROFESSION && Character.isUpperCase(answer[0])) {
             return "Профессия должна начинаться со строчной буквы\n${question.question}" to status.color
-        } else if (question == Question.MATERIAL && answer.contains("\\d")) {
+        } else if (question == Question.MATERIAL && answer.matches(Regex(".*\\d.*"))) {
             return "Материал не должен содержать цифр\n${question.question}" to status.color
         } else if (question == Question.BDAY && answer.contains("[A-Za-z]")) {
             return "Год моего рождения должен содержать только цифры\n${question.question}" to status.color

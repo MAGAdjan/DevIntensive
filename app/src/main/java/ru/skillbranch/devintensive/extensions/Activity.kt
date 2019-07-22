@@ -26,9 +26,10 @@ fun Activity.hideKeyboard() {
 fun Activity.isKeyboardOpen(): Boolean {
     var screenHeight = 0
     var keypadHeight = 0
-    mainLay.viewTreeObserver.addOnGlobalLayoutListener {
+    val layout = mainLay
+    layout.viewTreeObserver.addOnGlobalLayoutListener {
         val r = Rect()
-        mainLay.getWindowVisibleDisplayFrame(r)
+        layout.getWindowVisibleDisplayFrame(r)
         screenHeight = mainLay.rootView.height
         keypadHeight = screenHeight - r.bottom
     }
@@ -38,9 +39,10 @@ fun Activity.isKeyboardOpen(): Boolean {
 fun Activity.isKeyboardClosed(): Boolean {
     var screenHeight = 0
     var keypadHeight = 0
-    mainLay.viewTreeObserver.addOnGlobalLayoutListener {
+    val layout = mainLay
+    layout.viewTreeObserver.addOnGlobalLayoutListener {
         val r = Rect()
-        mainLay.getWindowVisibleDisplayFrame(r)
+        layout.getWindowVisibleDisplayFrame(r)
         screenHeight = mainLay.rootView.height
         keypadHeight = screenHeight - r.bottom
     }
