@@ -1,6 +1,7 @@
 package ru.skillbranch.devintensive.models
 
 import android.util.Log
+import androidx.core.text.isDigitsOnly
 
 class Bender(var status: Status = Status.NORMAL, var question: Question = Question.NAME) {
 
@@ -25,9 +26,9 @@ class Bender(var status: Status = Status.NORMAL, var question: Question = Questi
             return "Профессия должна начинаться со строчной буквы\n${question.question}" to status.color
         } else if (question == Question.MATERIAL && answer.matches(Regex(".*\\d.*"))) {
             return "Материал не должен содержать цифр\n${question.question}" to status.color
-        } else if (question == Question.BDAY && answer.contains("[A-Za-z]")) {
+        } else if (question == Question.BDAY && !answer.isDigitsOnly()) {
             return "Год моего рождения должен содержать только цифры\n${question.question}" to status.color
-        } else if (question == Question.SERIAL && !answer.contains("[A-Za-z") && answer.length != 7) {
+        } else if (question == Question.SERIAL && !answer.isDigitsOnly() && answer.length != 7) {
             return "Серийный номер содержит только цифры, и их 7\n${question.question}" to status.color
         }
         return if (question.answers.contains(answer.toLowerCase())) {
