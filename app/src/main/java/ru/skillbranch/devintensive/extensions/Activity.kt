@@ -8,6 +8,7 @@ import ru.skillbranch.devintensive.MainActivity
 import android.R.attr.bottom
 import android.graphics.Rect
 import android.opengl.ETC1.getHeight
+import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -23,30 +24,49 @@ fun Activity.hideKeyboard() {
     imm.hideSoftInputFromWindow(view!!.windowToken, 0)
 }
 
-fun Activity.isKeyboardOpen(): Boolean {
-    var screenHeight = 0
-    var keypadHeight = 0
-    val layout = mainLay
-    val dm = layout.resources.displayMetrics
-    layout.viewTreeObserver.addOnGlobalLayoutListener {
-        val r = Rect()
-        layout.getWindowVisibleDisplayFrame(r)
-        screenHeight = mainLay.rootView.height
-        keypadHeight = screenHeight - r.bottom
-    }
-    return keypadHeight > screenHeight * 0.128
+//fun Activity.isKeyboardOpen(): Boolean {
+//    var screenHeight = 0
+//    var keypadHeight = 0
+//    val layout = mainLay
+//    val dm = layout.resources.displayMetrics
+//    layout.viewTreeObserver.addOnGlobalLayoutListener {
+//        val r = Rect()
+//        layout.getWindowVisibleDisplayFrame(r)
+//        screenHeight = mainLay.rootView.height
+//        keypadHeight = screenHeight - r.bottom
+//    }
+//    return keypadHeight > screenHeight * 0.128
+//}
+//
+//fun Activity.isKeyboardClosed(): Boolean {
+//    var screenHeight = 0
+//    var keypadHeight = 0
+//    val layout = mainLay
+//    val dm = layout.resources.displayMetrics
+//    layout.viewTreeObserver.addOnGlobalLayoutListener {
+//        val r = Rect()
+//        layout.getWindowVisibleDisplayFrame(r)
+//        screenHeight = mainLay.rootView.height
+//        keypadHeight = screenHeight - r.bottom
+//    }
+//    return keypadHeight < screenHeight * 0.128
+//}
+
+fun Activity.isKeyboardShown(): Boolean {
+    val SOFT_KEYBOARD_HEIGHT_DP_THRESHOLD = 128
+
+    val rootView = findViewById<ViewGroup>(android.R.id.content)
+    val r = Rect()
+
+    rootView.getWindowVisibleDisplayFrame(r)
+    val dm = rootView.resources.displayMetrics
+
+    val heightDiff = rootView.bottom - r.bottom
+
+    val isKeyboardShown = heightDiff > SOFT_KEYBOARD_HEIGHT_DP_THRESHOLD * dm.density;
+    return isKeyboardShown
 }
 
-fun Activity.isKeyboardClosed(): Boolean {
-    var screenHeight = 0
-    var keypadHeight = 0
-    val layout = mainLay
-    val dm = layout.resources.displayMetrics
-    layout.viewTreeObserver.addOnGlobalLayoutListener {
-        val r = Rect()
-        layout.getWindowVisibleDisplayFrame(r)
-        screenHeight = mainLay.rootView.height
-        keypadHeight = screenHeight - r.bottom
-    }
-    return keypadHeight < screenHeight * 0.128
-}
+
+fun Activity.isKeyboardOpen() = isKeyboardShown()
+fun Activity.isKeyboardClosed() = !isKeyboardShown()
