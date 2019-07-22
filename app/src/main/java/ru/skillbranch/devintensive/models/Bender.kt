@@ -24,7 +24,7 @@ class Bender(var status: Status = Status.NORMAL, var question: Question = Questi
                 return "Имя должно начинаться с заглавной буквы\n${question.question}" to status.color
             } else if (question == Question.PROFESSION && Character.isUpperCase(answer[0])) {
                 return "Профессия должна начинаться со строчной буквы\n${question.question}" to status.color
-            } else if (question == Question.MATERIAL && answer.contains("[0-9]")) {
+            } else if (question == Question.MATERIAL && answer.contains("\\d")) {
                 return "Материал не должен содержать цифр\n${question.question}" to status.color
             } else if (question == Question.BDAY && answer.contains("[A-Za-z]")) {
                return "Год моего рождения должен содержать только цифры\n${question.question}" to status.color
