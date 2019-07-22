@@ -32,7 +32,7 @@ fun Activity.isKeyboardOpen(): Boolean {
         screenHeight = mainLay.rootView.height
         keypadHeight = screenHeight - r.bottom
     }
-    return keypadHeight < screenHeight * 0.15
+    return keypadHeight < screenHeight * 0.128
 }
 
 fun Activity.isKeyboardClosed(): Boolean {
@@ -44,5 +44,5 @@ fun Activity.isKeyboardClosed(): Boolean {
         screenHeight = mainLay.rootView.height
         keypadHeight = screenHeight - r.bottom
     }
-    return keypadHeight > screenHeight * 0.15
+    return keypadHeight > screenHeight * 0.128
 }
