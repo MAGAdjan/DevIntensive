@@ -20,7 +20,6 @@ class App : Application() {
     }
 
     override fun onCreate() {
-        setTheme(R.style.SplashTheme)
         super.onCreate()
         PreferencesRepository.getAppTheme().also {
             AppCompatDelegate.setDefaultNightMode(it)

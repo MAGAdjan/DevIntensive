@@ -14,8 +14,8 @@
 
     </style>
 
-    <style name="SplashTheme">
-        <item name="background">@drawable/splash_theme</item>
+    <style name="SplashTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowBackground">@drawable/splash_theme</item>
     </style>
 
 </resources>
