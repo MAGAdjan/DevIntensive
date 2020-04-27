@@ -117,7 +117,7 @@ class ProfileActivity : AppCompatActivity() {
 
     private fun validateRepository(repoName: String): Boolean {
 //        val regex = """^(https://|www\\.|https://www\\.)github\\.com/[A-Z0-9_-]*""".toRegex()
-        val regex = """^(https://|www.|https://www.)github.com/[A-z0-9_-]+""".toRegex()
+        val regex = """^(https://|www.|https://www.)?github.com/(?!(enterprise|features|topics|collections|trending|events|marketplace|pricing|nonprofit|customer-stories|security|login|join)$)[A-z0-9_-]+""".toRegex()
         return regex.matches(repoName) or repoName.isEmpty()
     }
 
