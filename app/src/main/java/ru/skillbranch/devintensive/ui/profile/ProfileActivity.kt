@@ -5,6 +5,8 @@ import android.graphics.ColorFilter
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.widget.EditText
@@ -25,11 +27,13 @@ import ru.skillbranch.devintensive.viewmodels.ProfileViewModel
 class ProfileActivity : AppCompatActivity() {
     companion object {
         const val IS_EDIT_MODE = "IS_EDIT_MODE"
+        const val ERROR = "Невалидный адрес репозитория"
     }
 
     private lateinit var viewModel: ProfileViewModel
     lateinit var viewFields : Map<String, TextView>
-    var isEditMode = false
+    private var isEditMode = false
+    private var isRepoCorrect = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
@@ -80,7 +84,7 @@ class ProfileActivity : AppCompatActivity() {
         showCurrentMode(isEditMode)
 
         btn_edit.setOnClickListener {
-            if (isEditMode) saveProfileInfo()
+            if (isEditMode && isRepoCorrect) saveProfileInfo()
             isEditMode = !isEditMode
             showCurrentMode(isEditMode)
         }
@@ -88,6 +92,33 @@ class ProfileActivity : AppCompatActivity() {
         btn_switch_theme.setOnClickListener {
             viewModel.switchTheme()
         }
+
+        et_repository.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                val repo = et_repository.text.toString()
+                Log.d("M_ProfileActivity", repo)
+                if (!validateRepository(repo)) {
+                    wr_repository.error = ERROR
+                    isRepoCorrect = false
+                } else {
+                    wr_repository.error = null
+                    isRepoCorrect = true
+                }
+            }
+
+        })
+    }
+
+    private fun validateRepository(repoName: String): Boolean {
+//        val regex = """^(https://|www\\.|https://www\\.)github\\.com/[A-Z0-9_-]*""".toRegex()
+        val regex = """^(https://|www.|https://www.)github.com/[A-z0-9_-]+""".toRegex()
+        return regex.matches(repoName) or repoName.isEmpty()
     }
 
     private fun showCurrentMode(isEdit: Boolean) {
