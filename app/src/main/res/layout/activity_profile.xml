@@ -59,7 +59,8 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@id/iv_avatar"
                     android:layout_centerHorizontal="true"
-                    android:text="John Doe" />
+                    android:text="John Doe"
+                    android:layout_marginTop="@dimen/spacing_normal_16"/>
 
             <TextView
                     android:id="@+id/tv_rank"

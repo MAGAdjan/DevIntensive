@@ -1,119 +1,225 @@
-package ru.skillbranch.devintensive.ui.custom
-
 import android.content.Context
+import android.content.res.Resources
 import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
-import android.widget.ImageView
+import android.util.Log
+import android.widget.ImageView.ScaleType.CENTER_CROP
+import android.widget.ImageView.ScaleType.CENTER_INSIDE
 import androidx.annotation.ColorRes
 import androidx.annotation.Dimension
+import androidx.appcompat.widget.AppCompatImageView
+import androidx.core.content.ContextCompat
+import ru.skillbranch.devintensive.App
 import ru.skillbranch.devintensive.R
-import kotlin.math.roundToInt
-
 
 class CircleImageView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
-): ImageView(context, attrs, defStyleAttr) {
+) : AppCompatImageView(context, attrs, defStyleAttr) {
 
-    private var borderColor = Color.WHITE
-    private var borderWidth = 2
-    private var mInitialized = true
-
-    fun getBorderWidth() = borderWidth
-
-    fun setBorderWidth(@Dimension dp:Int) {
-        borderWidth = dp
+    companion object {
+        private const val DEFAULT_BORDER_WIDTH = 2
+        private const val DEFAULT_BORDER_COLOR = Color.WHITE
     }
 
-    fun getBorderColor() = borderColor
+    private val paint: Paint = Paint().apply { isAntiAlias = true }
+    private val paintBorder: Paint = Paint().apply { isAntiAlias = true }
+    private val paintBackground: Paint = Paint().apply { isAntiAlias = true }
+    private var circleCenter: Int = 0
+    private var heightCircle: Int = 0
+
+    private var borderWidth: Int = dpToPx(DEFAULT_BORDER_WIDTH, resources)
+    private var borderColor = DEFAULT_BORDER_COLOR
+
+    private var civImage: Bitmap? = null
+    private var civDrawable: Drawable? = null
+
+    fun getBorderWidth() = pxToDp(borderWidth, resources)
+
+    fun setBorderWidth(@Dimension(unit = Dimension.DP) dp: Int) {
+        if (dpToPx(dp, resources) == borderWidth) return
+        borderWidth = dpToPx(dp, resources)
+    }
+
+    fun getBorderColor(): Int = borderColor
 
     fun setBorderColor(hex: String) {
-        borderColor = Color.parseColor(hex)
+        val color = Color.parseColor(hex)
+        if (color == borderColor) return
+        borderColor = color
     }
 
     fun setBorderColor(@ColorRes colorId: Int) {
-        borderColor = colorId
+        if (colorId == borderColor) return
+        borderColor = ContextCompat.getColor(App.applicationContext(), colorId)
     }
 
     init {
-
         if (attrs != null) {
-            val a = context.obtainStyledAttributes (attrs, R.styleable.CircleImageView, 0, 0);
+            val a = context.obtainStyledAttributes(attrs, R.styleable.CircleImageView, defStyleAttr, 0)
 
-            borderColor = a.getColor(R.styleable.CircleImageView_cv_borderColor, Color.WHITE)
-            borderWidth = a.getDimensionPixelSize(R.styleable.CircleImageView_cv_borderWidth, 2)
+            borderWidth = a.getDimensionPixelSize(
+                R.styleable.CircleImageView_cv_borderWidth,
+                dpToPx(DEFAULT_BORDER_WIDTH, resources)
+            )//dpToPx(DEFAULT_BORDER_WIDTH))
+            Log.d("M_CircleImageView", "$borderWidth")
+            borderColor = a.getColor(R.styleable.CircleImageView_cv_borderColor, DEFAULT_BORDER_COLOR)
 
             a.recycle()
         }
     }
 
-    private fun getBitmapFromDrawable(drawable: Drawable?): Bitmap? {
+    override fun getScaleType(): ScaleType =
+        super.getScaleType().let { if (it == null || it != CENTER_INSIDE) CENTER_CROP else it }
 
-        if (drawable is BitmapDrawable) {
-            return drawable.bitmap
+    override fun setScaleType(scaleType: ScaleType) {
+        if (scaleType != CENTER_CROP && scaleType != CENTER_INSIDE) {
+            throw IllegalArgumentException(String.format("ScaleType is not supported.", scaleType))
+        } else {
+            super.setScaleType(scaleType)
         }
-        val bitmap = Bitmap.createBitmap(
-            drawable!!.intrinsicWidth,
-            drawable.intrinsicHeight,
-            Bitmap.Config.ARGB_8888
-        )
-        val canvas = Canvas(bitmap)
-        drawable.setBounds(0, 0, canvas.width, canvas.height)
-        drawable.draw(canvas)
-        return bitmap
     }
-
-//    private fun setupBitmap() {
-//        if (!mInitialized) {
-//            return
-//        }
-//        mBitmap = getBitmapFromDrawable(drawable)
-//        if (mBitmap == null) {
-//            return
-//        }
-//        mBitmapShader = BitmapShader(mBitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP)
-//        mBitmapPaint.shader = mBitmapShader
-//    }
 
     override fun onDraw(canvas: Canvas) {
-        drawRoundImage(canvas)
-        drawStroke(canvas)
+        loadBitmap()
+
+        if (civImage == null) return
+
+        val circleCenterWithBorder = circleCenter + borderWidth
+        val margeRadius = 0f
+
+        canvas.drawCircle(
+            circleCenterWithBorder.toFloat(),
+            circleCenterWithBorder.toFloat(),
+            circleCenterWithBorder - margeRadius,
+            paintBorder
+        )
+        canvas.drawCircle(
+            circleCenterWithBorder.toFloat(),
+            circleCenterWithBorder.toFloat(),
+            circleCenter - margeRadius,
+            paintBackground
+        )
+        canvas.drawCircle(
+            circleCenterWithBorder.toFloat(),
+            circleCenterWithBorder.toFloat(),
+            circleCenter - margeRadius,
+            paint
+        )
+
     }
 
-    private fun drawStroke(canvas: Canvas) {
-        val paint = Paint(Paint.ANTI_ALIAS_FLAG)
-        val radius = width / 2f
+    private fun update() {
+        if (civImage != null)
+            updateShader()
 
-        /* Border paint */
-        paint.color = borderColor
-        paint.style = Paint.Style.STROKE
-        paint.strokeWidth = borderWidth.toFloat()
-        canvas.drawCircle(width / 2f, width / 2f, radius - borderWidth / 2f, paint)
+        val usableWidth = width - (paddingLeft + paddingRight)
+        val usableHeight = height - (paddingTop + paddingBottom)
+
+        heightCircle = Math.min(usableWidth, usableHeight)
+
+        circleCenter = ((heightCircle - borderWidth * 2) / 2)
+        paintBorder.color = borderColor
+
+        invalidate()
     }
 
-    private fun drawRoundImage(canvas: Canvas) {
-        var b: Bitmap? = getBitmapFromDrawable(drawable)
-        val bitmap = b?.copy(Bitmap.Config.ARGB_8888, true)
+    private fun loadBitmap() {
+        if (civDrawable == drawable) return
 
-        /* Scale the bitmap */
-        val scaledBitmap: Bitmap
-        val ratio: Float = bitmap!!.width.toFloat() / bitmap.height.toFloat()
-        val height: Int = (width / ratio).roundToInt()
-        scaledBitmap = Bitmap.createScaledBitmap(bitmap, width, height, false)
+        civDrawable = drawable
+        civImage = drawableToBitmap(civDrawable)
+        updateShader()
+    }
 
-        /* Cutting the outer of the circle */
-        val shader: Shader
-        shader = BitmapShader(scaledBitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP)
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        update()
+    }
 
-        val rect = RectF()
-        rect.set(0f, 0f, width.toFloat(), height.toFloat())
+    private fun updateShader() {
+        civImage?.also {
+            val shader = BitmapShader(it, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP)
+            val scale: Float
+            val dx: Float
+            val dy: Float
 
-        val imagePaint = Paint()
-        imagePaint.isAntiAlias = true
-        imagePaint.shader = shader
-        canvas.drawRoundRect(rect, width.toFloat(), height.toFloat(), imagePaint)
+            when (scaleType) {
+                CENTER_CROP -> if (it.width * height > width * it.height) {
+                    scale = height / it.height.toFloat()
+                    dx = (width - it.width * scale) * 0.5f
+                    dy = 0f
+                } else {
+                    scale = width / it.width.toFloat()
+                    dx = 0f
+                    dy = (height - it.height * scale) * 0.5f
+                }
+                CENTER_INSIDE -> if (it.width * height < width * it.height) {
+                    scale = height / it.height.toFloat()
+                    dx = (width - it.width * scale) * 0.5f
+                    dy = 0f
+                } else {
+                    scale = width / it.width.toFloat()
+                    dx = 0f
+                    dy = (height - it.height * scale) * 0.5f
+                }
+                else -> {
+                    scale = 0f
+                    dx = 0f
+                    dy = 0f
+                }
+            }
+
+            shader.setLocalMatrix(Matrix().apply {
+                setScale(scale, scale)
+                postTranslate(dx, dy)
+            })
+
+            paint.shader = shader
+        }
+    }
+
+    private fun drawableToBitmap(drawable: Drawable?): Bitmap? =
+        when (drawable) {
+            null -> null
+            is BitmapDrawable -> drawable.bitmap
+            else -> try {
+                val bitmap =
+                    Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
+                val canvas = Canvas(bitmap)
+                drawable.setBounds(0, 0, canvas.width, canvas.height)
+                drawable.draw(canvas)
+                bitmap
+            } catch (e: Exception) {
+                e.printStackTrace()
+                null
+            }
+        }
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        val width = measure(widthMeasureSpec)
+        val height = measure(heightMeasureSpec)
+        setMeasuredDimension(width, height)
+    }
+
+    private fun measure(measureSpec: Int): Int {
+        val specMode = MeasureSpec.getMode(measureSpec)
+        val specSize = MeasureSpec.getSize(measureSpec)
+        return when (specMode) {
+            MeasureSpec.EXACTLY -> specSize
+            MeasureSpec.AT_MOST -> specSize
+            else -> heightCircle
+        }
+    }
+
+    fun dpToPx(number: Int, resources: Resources): Int {
+        return (number * resources.displayMetrics.density + 0.5f).toInt()
+    }
+
+    fun pxToDp(number: Int, resources: Resources): Int {
+        return (number / resources.displayMetrics.density + 0.5f).toInt()
     }
 }
