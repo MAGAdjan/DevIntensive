@@ -1,26 +1,21 @@
 package ru.skillbranch.devintensive.ui.profile
 
-import android.graphics.Color
-import android.graphics.ColorFilter
-import android.graphics.PorterDuff
-import android.graphics.PorterDuffColorFilter
+import android.graphics.*
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.util.TypedValue
 import android.view.View
 import android.widget.EditText
-import android.widget.Filter
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import kotlinx.android.synthetic.main.activity_profile.*
 import ru.skillbranch.devintensive.R
-import ru.skillbranch.devintensive.extensions.hideKeyboard
-import ru.skillbranch.devintensive.models.Bender
 import ru.skillbranch.devintensive.models.Profile
+import ru.skillbranch.devintensive.ui.custom.CircleImageView
 import ru.skillbranch.devintensive.utils.Utils
 import ru.skillbranch.devintensive.viewmodels.ProfileViewModel
 
@@ -66,6 +61,8 @@ class ProfileActivity : AppCompatActivity() {
                 v.text = it[k].toString()
             }
         }
+
+        drawInitials()
     }
 
     private fun initViews(savedInstanceState: Bundle?) {
@@ -169,6 +166,49 @@ class ProfileActivity : AppCompatActivity() {
         ).apply {
             viewModel.saveProfileData(this)
         }
+    }
+
+    private fun drawInitials() {
+        val circleImageView: CircleImageView = findViewById(R.id.iv_avatar)
+        val size = resources.getDimension(R.dimen.avatar_round_size).toInt()
+        val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        circleImageView.setImageBitmap(bitmap)
+
+        val text = Utils.toInitials(
+            Utils.transliteration(et_first_name.text.toString()),
+            Utils.transliteration(et_last_name.text.toString())
+        ) ?: ""
+        val mPaint = Paint()
+        val mTextBoundRect = Rect()
+
+        val width = resources.getDimension(R.dimen.avatar_round_size)
+        val height = resources.getDimension(R.dimen.avatar_round_size)
+
+
+        val centerX = width / 2
+        val centerY = height / 2
+
+        val value = TypedValue()
+        theme.resolveAttribute(R.attr.colorAccent, value, true)
+        canvas.drawColor(value.data)
+
+        Log.d("M_ProfileActivity", "smth")
+        mPaint.color = Color.WHITE
+        mPaint.textSize = resources.getDimension(R.dimen.avatar_initials_48)
+
+        mPaint.getTextBounds(text, 0, text.length, mTextBoundRect)
+        val mTextWidth = mPaint.measureText(text)
+        val mTextHeight = mTextBoundRect.height()
+
+        canvas.drawText(
+            text,
+            centerX - (mTextWidth / 2f),
+            centerY + (mTextHeight / 2f),
+            mPaint
+        )
+
+        circleImageView.setImageBitmap(bitmap)
     }
 
 }
